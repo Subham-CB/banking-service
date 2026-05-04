@@ -153,7 +153,7 @@ public class AccountServiceImpl implements AccountService {
         String candidate;
         do {
             // Generate a random ACCOUNT_NUMBER_DIGITS-digit number, zero-padded
-            long number = (long) (SECURE_RANDOM.nextDouble() * ACCOUNT_NUMBER_BOUND);
+            long number = SECURE_RANDOM.nextLong(ACCOUNT_NUMBER_BOUND);
             candidate = String.format("%0" + ACCOUNT_NUMBER_DIGITS + "d", number);
         } while (accountRepository.existsByAccountNumber(candidate));
         return candidate;
