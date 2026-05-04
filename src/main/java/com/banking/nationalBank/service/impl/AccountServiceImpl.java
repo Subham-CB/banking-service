@@ -14,13 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+
+    private static final int ACCOUNT_NUMBER_DIGITS = 12;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final long ACCOUNT_NUMBER_BOUND = (long) Math.pow(10, ACCOUNT_NUMBER_DIGITS);
 
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
@@ -148,9 +152,9 @@ public class AccountServiceImpl implements AccountService {
     private String generateAccountNumber() {
         String candidate;
         do {
-            long timestamp = Instant.now().toEpochMilli();
-            long random = (long) (Math.random() * 9000) + 1000;
-            candidate = String.valueOf(timestamp).substring(4) + random;
+            // Generate a random ACCOUNT_NUMBER_DIGITS-digit number, zero-padded
+            long number = (long) (SECURE_RANDOM.nextDouble() * ACCOUNT_NUMBER_BOUND);
+            candidate = String.format("%0" + ACCOUNT_NUMBER_DIGITS + "d", number);
         } while (accountRepository.existsByAccountNumber(candidate));
         return candidate;
     }
